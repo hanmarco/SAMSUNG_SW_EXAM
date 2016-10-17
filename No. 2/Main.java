@@ -1,132 +1,171 @@
 package samsung1;
 
+import java.util.ArrayList;
 import java.util.Scanner;
+/*
+testcase input answer : 7 6 18
+ 
+3								
+9								
+2	0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0	0
+0	1	0	-1	0	0	0	0	0
+0	0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0	0
+0	-3	0	0	0	0	-2	3	0
+5
+-3 0 0 -1 1
+0 0 0 0 0
+0 0 0 0 0
+0 0 0 0 0
+-2 0 0 3 2
+9								
+2	0	0	0	0	0	0	0	-4
+0	0	0	0	0	-5	0	0	0
+0	1	0	-1	0	0	0	0	0
+0	0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0	0
+0	0	0	0	0	4	0	0	0
+0	0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	5	0
+0	-3	0	0	0	-2	0	3	0
 
-class Point {// 좌표 객체
-	int x;
-	int y;
-	
-	Point(int X, int Y) {
-		x = X;
-		y = Y;
-	}
-}
-
+*/
 public class Main {
-	static int[][] cityMatrix; // 도시를 만드는 객체
-	static Point[] HOME; // 집의 좌표를 저장할 객체 배열
-	static Point[] WORK; // 직장의 좌표를 저장할 객체 배열
+	static int[][] cityMatrix; 	// 도시를 만드는 배열 
+	static Position[] HOME; 		// 집의 좌표를 저장할 Point객체 배열
+	static Position[] WORK; 		// 직장의 좌표를 저장할 Point객체 배열
 
 	public static void main(String[] args) {
-		WORK = new Point[8 + 1]; // 0번은 집과 회사가 아니므로 이용하지않음
-		HOME = new Point[8 + 1];
+		WORK = new Position[8 + 1]; // 0번은 집과 회사가 아니므로 이용하지않음 범위는 3<=m<=8이므로 
+		HOME = new Position[8 + 1]; // 인덱스를 직접 활용하기위해 1을 더해줌 (메모리 차지 매우 작음)
+
+		Scanner scanner = new Scanner(System.in);	//표준입력 스캐너 객체생성 
 		
-		Scanner s = new Scanner(System.in);
-		int T = s.nextInt();
+		int T = scanner.nextInt();				//T는 테스트케이스 크기 
 
-		for (int testCase = 0; testCase < T; testCase++) {
-			int[] ret = scanMaze(s); 	// 미로를 스캔하고 그 정보인 가로세로 사이즈 n과 직장-집이 몇쌍인지를
-										// 저장하는 m을 저장함
-			int n = ret[0];
-			int m = ret[1];
+		for (int testCase = 1; testCase <= T; testCase++) 
+		{
+			int[] ret = cityConstructor_use(scanner);// 미로를 스캔하고
+			int n = ret[0];			// 그 정보인 가로세로 사이즈 n
+			int m = ret[1];			// 직장-집의 쌍 크기 m 
 
-			System.out.println(tryNcaseSubwaySimulation(n, m));
+			System.out.println("Case #" + testCase);
+			System.out.println(trySimulation(n, m));
 		}
 
 	}
 
 	// 표준입력받아 미로를 완성하는 함수
-	private static int[] scanMaze(Scanner s) {
+	static int[] cityConstructor_use(Scanner scanner) {
 
-		int cityLength = s.nextInt();
-		int WorkHomeCount = Integer.MIN_VALUE;
+		int n = scanner.nextInt();
+		int m = Integer.MIN_VALUE;
 
-		cityMatrix = new int[cityLength][cityLength];
+		cityMatrix = new int[n][n];
 
-		for (int i = 0; i < cityLength; i++) {
-			for (int j = 0; j < cityLength; j++) {
-				int temp = cityMatrix[i][j] = s.nextInt();
-				if (temp > 0) {
-					HOME[temp] = new Point(i, j);
-				} else if (temp < 0) {
+		for (int i = 0; i < n; i++) 
+			for (int j = 0; j < n; j++) 
+			{
+				int inputValue = cityMatrix[i][j] = scanner.nextInt();
+				if (inputValue > 0) {
+					HOME[inputValue] = new Position(i, j);
+				} else if (inputValue < 0) {
 					// temp는 음수이다.
-					temp = Math.abs(temp);
-					WORK[temp] = new Point(i, j);
+					inputValue = Math.abs(inputValue);
+					WORK[inputValue] = new Position(i, j);
 				}
-				if (temp > WorkHomeCount)
-					WorkHomeCount = temp;
+				if (inputValue > m)
+					m = inputValue;
 			}
-		}
-		int[] ret = { cityLength, WorkHomeCount };
-		return ret;
+		
+		int[] returnValue = { n, m };
+		return returnValue;
 
 	}
 
-	// 두개지점의거리 계산
-	private static int calcDistance(Point A, Point B) {
-		int ret = Math.abs(A.x - B.x) + Math.abs(A.y - B.y);
+	// 가장가까운 정류장이나 직접 가는 것중 가장 짧은곳으로 향하여 시뮬레이션
+	// 결과로 집에서 회사까지 가는 가장 짧은 거리를 반환
+	static int minDistanceHomeToCompany_Via_Station(Position home, Position company,Position[] stations) {
+		int	min = home.toDistance(company);
 
-		return ret;
-	}
-
-	// 가장가까운 정류장이나 직접 가는 것중 가장 짧은곳으로 향함
-	private static int minDistanceToStation(Point src, Point Dst, Point station1, Point station2, Point station3) {
-		// calc most nearstation
-		int dst = calcDistance(src, Dst);
-		int min = dst;// 10
-		Point[] stations = new Point[3];
-
-		stations[0] = station1;
-		stations[1] = station2;
-		stations[2] = station3;
-
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				int temp = calcDistance(src, stations[i]) + calcDistance(stations[j], Dst);// 3
-				if (temp < min) {
+		for (Position inStation : stations)
+			for (Position outStation : stations) 
+			{
+				int temp = home.toDistance(inStation) + company.toDistance(outStation);
+				if (temp < min)
 					min = temp;
-				}
 			}
-		}
+
 		return min;
 	}
 
-	// 현재의정류장을 이용했을때 이동거리 계산
-	private static int subwaycalc(int M, Point station1, Point station2, Point station3) {
+	// 현재의정류장을 이용했을때 이동거리 계산함
+	// 모든 집-회사 쌍의최소 이동거리 반환
+	static int distancesSummary(int M, Position[] stations) {
 		int totalDistance = 0;
 
 		for (int i = 1; i <= M; i++) {
-			totalDistance += minDistanceToStation(WORK[i], HOME[i], station1, station2, station3);
+			totalDistance += minDistanceHomeToCompany_Via_Station(WORK[i], HOME[i], stations);
 		}
 
 		return totalDistance;
 	}
 
-	private static int tryNcaseSubwaySimulation(int N, int M) {
+	// 모든 경우에 대해 시뮬레이션하여 최소값 반환
+	static int trySimulation(int N, int M) {
 		int min = Integer.MAX_VALUE;
-		for (int i = 0; i < N; i++)	
-		for (int j = 0; j < N; j++) // 1
-		for (int k = 0; k < N; k++)
-		for (int k2 = 0; k2 < N; k2++) // 2
-		for (int l = 0; l < N; l++)
-		for (int l2 = 0; l2 < N; l2++) {// 3
-			if (k == i && k2 == j)
-				continue;
-			if (l == i && l2 == j)
-				continue;
-			if (l == k && l2 == k2)
-				continue;
-			if ((cityMatrix[k][k2] != 0) || (cityMatrix[l][l2] != 0) || (cityMatrix[i][j] != 0))
-				continue;
+		ArrayList<Position> stationCases = new ArrayList<Position>();
 
-			Point st1 = new Point(i, j);
-			Point st2 = new Point(k, k2);
-			Point st3 = new Point(l, l2);
-			int temp = subwaycalc(M, st1, st2, st3);
-			if (temp < min)
-				min = temp;
+		for (int i = 0; i < N; i++)
+			for (int j = 0; j < N; j++)
+			{
+				if (cityMatrix[i][j] != 0) // 집이나 회사가 있는 위치이면 생략
+					continue;
 
-		}
-		return min;
+				//모든 경우를 리스트에 채운다 
+				stationCases.add(new Position(i, j));
+			}
+
+		//stationCases에는 정류장의 위치를 저장하고있음 st1, st2, st3 Iterator는 같은 stationCases객체를 가리키지만
+		//Iterator는 다른 위치를 가리키므로 활용하기 좋다 
+		for (Position st1 : stationCases)
+			for (Position st2 : stationCases) {
+				if (st1.isSame(st2))	//1번 정류장과 2번이 같으면 생략 
+					continue;
+				
+				for (Position st3 : stationCases) {
+					if (st3.isSame(st1) || st3.isSame(st2))	//2-3, 1-3정류장이 같으면 생략  	
+						continue;
+ 
+					Position[] testCase = { st1, st2, st3 };	//여기까지 오면 1-2-3정류장이 모두 다른 케이스
+					int summary = distancesSummary(M, testCase);	//현재 정류장 쌍의 거리합을 측정한다. 
+					if (summary < min)		//측정값이 이전까지 등장하지 않았던 최소값이면 min에 저장 
+						min = summary;
+				}
+			}
+		
+		return min; //모든 경우중 가장 작은 값을 반환 
+	}
+}
+
+class Position {// 좌표 객체
+	int x, y;
+
+	//constructor
+	Position(int X, int Y) { 	x = X; y = Y;	}
+
+	boolean isSame(Position target) {
+		if ((target.x == this.x) && (target.y == this.y))
+			return true;
+		
+		return false;
+	}
+
+	int toDistance(Position target) {
+		return Math.abs(this.x - target.x) + Math.abs(this.y - target.y);
 	}
 }
