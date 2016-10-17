@@ -90,16 +90,14 @@ public class Main {
 	// 가장가까운 정류장이나 직접 가는 것중 가장 짧은곳으로 향하여 시뮬레이션
 	// 결과로 집에서 회사까지 가는 가장 짧은 거리를 반환
 	static int minDistanceHomeToCompany_Via_Station(Position home, Position company,Position[] stations) {
-		int	min = home.toDistance(company);
+		int min = home.toDistance(company);
 
 		for (Position inStation : stations)
-			for (Position outStation : stations) 
-			{
+			for (Position outStation : stations) {
 				int temp = home.toDistance(inStation) + company.toDistance(outStation);
 				if (temp < min)
 					min = temp;
 			}
-
 		return min;
 	}
 
@@ -118,14 +116,12 @@ public class Main {
 	// 모든 경우에 대해 시뮬레이션하여 최소값 반환
 	static int trySimulation(int N, int M) {
 		int min = Integer.MAX_VALUE;
-		ArrayList<Position> stationCases = new ArrayList<Position>();
+		ArrayList<Position> stationCases = new ArrayList<Position>();	//테스트할 지하철의 좌표를 저장
 
 		for (int i = 0; i < N; i++)
-			for (int j = 0; j < N; j++)
-			{
+			for (int j = 0; j < N; j++){
 				if (cityMatrix[i][j] != 0) // 집이나 회사가 있는 위치이면 생략
 					continue;
-
 				//모든 경우를 리스트에 채운다 
 				stationCases.add(new Position(i, j));
 			}
