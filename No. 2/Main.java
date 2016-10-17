@@ -2,38 +2,7 @@ package samsung1;
 
 import java.util.ArrayList;
 import java.util.Scanner;
-/*
-testcase input answer : 7 6 18
- 
-3								
-9								
-2	0	0	0	0	0	0	0	0
-0	0	0	0	0	0	0	0	0
-0	1	0	-1	0	0	0	0	0
-0	0	0	0	0	0	0	0	0
-0	0	0	0	0	0	0	0	0
-0	0	0	0	0	0	0	0	0
-0	0	0	0	0	0	0	0	0
-0	0	0	0	0	0	0	0	0
-0	-3	0	0	0	0	-2	3	0
-5
--3 0 0 -1 1
-0 0 0 0 0
-0 0 0 0 0
-0 0 0 0 0
--2 0 0 3 2
-9								
-2	0	0	0	0	0	0	0	-4
-0	0	0	0	0	-5	0	0	0
-0	1	0	-1	0	0	0	0	0
-0	0	0	0	0	0	0	0	0
-0	0	0	0	0	0	0	0	0
-0	0	0	0	0	4	0	0	0
-0	0	0	0	0	0	0	0	0
-0	0	0	0	0	0	0	5	0
-0	-3	0	0	0	-2	0	3	0
 
-*/
 public class Main {
 	static int[][] cityMatrix; 	// 도시를 만드는 배열 
 	static Position[] HOME; 		// 집의 좌표를 저장할 Point객체 배열
