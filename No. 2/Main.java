@@ -121,7 +121,10 @@ class Position {// 좌표 객체
 	int x, y;
 
 	//constructor
-	Position(int X, int Y) { 	x = X; y = Y;	}
+	Position(int X, int Y) {
+		this.x = X;
+		this.y = Y;	
+	}
 
 	boolean isSame(Position target) {
 		if ((target.x == this.x) && (target.y == this.y))
