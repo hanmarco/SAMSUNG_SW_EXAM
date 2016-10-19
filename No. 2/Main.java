@@ -6,10 +6,10 @@ import java.util.Scanner;
 public class Main {
 	static int[][] cityMatrix; 	// 도시를 만드는 배열 
 	static Position[] HOME; 		// 집의 좌표를 저장할 Point객체 배열
-	static Position[] WORK; 		// 직장의 좌표를 저장할 Point객체 배열
+	static Position[] COMPANY; 		// 직장의 좌표를 저장할 Point객체 배열
 
 	public static void main(String[] args) {
-		WORK = new Position[8 + 1]; // 0번은 집과 회사가 아니므로 이용하지않음 범위는 3<=m<=8이므로 
+		COMPANY = new Position[8 + 1]; // 0번은 집과 회사가 아니므로 이용하지않음 범위는 3<=m<=8이므로 
 		HOME = new Position[8 + 1]; // 인덱스를 직접 활용하기위해 1을 더해줌 (메모리 차지 매우 작음)
 
 		Scanner scanner = new Scanner(System.in);	//표준입력 스캐너 객체생성 
@@ -58,7 +58,7 @@ public class Main {
 
 	// 가장가까운 정류장이나 직접 가는 것중 가장 짧은곳으로 향하여 시뮬레이션
 	// 결과로 집에서 회사까지 가는 가장 짧은 거리를 반환
-	static int minDistanceHomeToCompany_Via_Station(Position home, Position company,Position[] stations) {
+	static int minDistanceHomeToCompany_Via_Station(Position home, Position company, Position[] stations) {
 		int min = home.toDistance(company);
 
 		for (Position inStation : stations)
@@ -76,7 +76,7 @@ public class Main {
 		int totalDistance = 0;
 
 		for (int i = 1; i <= M; i++) {
-			totalDistance += minDistanceHomeToCompany_Via_Station(WORK[i], HOME[i], stations);
+			totalDistance += minDistanceHomeToCompany_Via_Station(COMPANY[i], HOME[i], stations);
 		}
 
 		return totalDistance;
