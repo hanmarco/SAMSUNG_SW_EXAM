@@ -3,6 +3,27 @@ package samsung1;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+class Position {// 좌표를 저장할 외부 클래스
+	int x, y;
+
+	//constructor
+	Position(int X, int Y) {
+		this.x = X;
+		this.y = Y;	
+	}
+
+	boolean isSame(Position target) {
+		if ((target.x == this.x) && (target.y == this.y))
+			return true;
+		
+		return false;
+	}
+
+	int toDistance(Position target) {
+		return Math.abs(this.x - target.x) + Math.abs(this.y - target.y);
+	}
+}
+
 public class Main {
 	static int[][] cityMatrix; 	// 도시를 만드는 배열 
 	static Position[] HOME; 		// 집의 좌표를 저장할 Point객체 배열
@@ -25,7 +46,7 @@ public class Main {
 			System.out.println("Case #" + testCase);
 			System.out.println(trySimulation(n, m));
 		}
-
+		scanner.close();
 	}
 
 	// 표준입력받아 미로를 완성하는 함수
@@ -114,26 +135,5 @@ public class Main {
 			}
 		
 		return min; //모든 경우중 가장 작은 값을 반환 
-	}
-}
-
-class Position {// 좌표 객체
-	int x, y;
-
-	//constructor
-	Position(int X, int Y) {
-		this.x = X;
-		this.y = Y;	
-	}
-
-	boolean isSame(Position target) {
-		if ((target.x == this.x) && (target.y == this.y))
-			return true;
-		
-		return false;
-	}
-
-	int toDistance(Position target) {
-		return Math.abs(this.x - target.x) + Math.abs(this.y - target.y);
 	}
 }
