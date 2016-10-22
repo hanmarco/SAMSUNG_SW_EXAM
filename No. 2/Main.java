@@ -25,7 +25,7 @@ public class Main {
 			System.out.println(trySimulation2(n, m));
 			
 		}
-		
+		scanner.close();
 	}
 
 	// 표준입력받아 미로를 완성하는 함수
